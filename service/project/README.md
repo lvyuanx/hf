@@ -1,31 +1,40 @@
 # 鸿富管理系统说明文档
 
 ## git提交规范
-```angular2html
-git commit -m "feat: 新增xxx功能"
-git commit -m "fix: 修复xxx问题"
-git commit -m "docs: 修改xxx文档"
-git commit -m "style: 修改xxx样式"
-git commit -m "refactor: 重构xxx"
-git commit -m "test: 测试xxx"
-git commit -m "chore: 修改xxx"
-git commit -m "revert: 撤销xxx"
-git commit -m "perf: 优化xxx"
-git commit -m "build: 构建xxx"
-git commit -m "ci: 集成xxx"
-git commit -m "workflow: 工作流xxx"
-git commit -m "merge: 合并xxx"
-git commit -m "revert: 撤销xxx"
-git commit -m "sync: 同步xxx"
-git commit -m "depend: 依赖xxx"
-git commit -m "release: 发布xxx"
-git commit -m "deploy: 部署xxx"
-git commit -m "undoc: 未写文档xxx"
-git commit -m "chore: 修改xxx"
-git commit -m "revert: 撤销xxx"
-git commit -m "sync: 同步xxx"
-git commit -m "depend: 依赖xxx"
-git commit -m "release: 发布xxx"
-```
-**提交美化**
-https://www.cnblogs.com/zhbeier/articles/16535680.html
+
+| emoji        | emoji 代码                   | commit 说明       |
+|--------------|----------------------------|-----------------|
+| (庆祝)         | :tada:                     | 初次提交            |
+| (火花)         | :sparkles:                 | 引入新功能           |
+| (书签)         | :bookmark:                 | 发行/版本标签         |
+| (bug)        | :bug:                      | 修复 bug          |
+| (急救车)        | :ambulance:                | 重要补丁            |
+| (地球)         | :globe_with_meridians:     | 国际化与本地化         |
+| (口红)         | :lipstick:                 | 更新 UI 和样式文件     |
+| (警车灯)        | :rotating_light:           | 移除 linter 警告    |
+| (扳手)         | :wrench:                   | 修改配置文件          |
+| (加号)         | :heavy_plus_sign:          | 增加一个依赖          |
+| (减号)         | :heavy_minus_sign:         | 减少一个依赖          |
+| (上升箭头)       | :arrow_up:                 | 升级依赖            |
+| (下降箭头)       | :arrow_down:               | 降级依赖            |
+| (闪电)         | :zap:                      | 提升性能            |
+| (上升趋势图)      | :chart_with_upwards_trend: | 添加分析或跟踪代码       |
+| (火箭)         | :rocket:                   | 部署功能            |
+| (白色复选框)      | :white_check_mark:         | 增加测试            |
+| (备忘录)        | :memo:                     | 撰写文档            |
+| (锤子)         | :hammer:                   | 重大重构            |
+| (调色板)        | :art:                      | 改进代码结构/代码格式     |
+| (火焰)         | :fire:                     | 移除代码或文件         |
+| (铅笔)         | :pencil2:                  | 修复 typo         |
+| (施工)         | :construction:             | 工作进行中           |
+| (工人)         | :construction_worker:      | 添加 CI 构建系统      |
+| (绿心)         | :green_heart:              | 修复 CI 构建问题      |
+| (锁)          | :lock:                     | 修复安全问题          |
+| (鲸鱼)         | :whale:                    | Docker 相关工作     |
+| (苹果)         | :apple:                    | 修复 macOS 下的问题   |
+| (企鹅)         | :penguin:                  | 修复 Linux 下的问题   |
+| (旗帜)         | :checked_flag:             | 修复 Windows 下的问题 |
+| (卷轴)         | :page_facing_up:           | 添加许可证           |
+| (放大镜)        | :mag:                      | 添加或更新测试         |
+| (微笑脸)        | :bulb:                     | 添加或更新注释         |
+| (礼物)         | :gift:                     | 添加或更新资产         |
