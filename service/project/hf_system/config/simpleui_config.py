@@ -39,7 +39,7 @@ SIMPLEUI_CONFIG = {
                         {
                             'name': '订单流程管理',
                             'icon': 'el-icon-paperclip',
-                            'url': 'order/stepsort/'
+                            'url': 'order/stepsortchangerecord/'
                         }
                     ]
                 },

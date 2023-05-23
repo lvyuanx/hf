@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from order.models import OrderType, OrderBase, OrderList, StepBase, StepSort
+from order.models import OrderType, OrderBase, OrderList, StepBase, StepSortChangeRecord, StepSort
 
 
 @admin.register(OrderType)
@@ -76,6 +76,69 @@ class StepBaseAdmin(admin.ModelAdmin):
     list_display_links = ('name',)
 
     list_per_page = 10
+
+
+@admin.register(StepSortChangeRecord)
+class StepSortChangeRecordAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(is_delete=False)
+
+    list_display = ('order_type', 'notes', 'step_info_link')
+    list_display_links = ('order_type',)
+    list_per_page = 10
+
+    @staticmethod
+    def sort_step(step_lst):
+        """根据parent_step和child_step的关系，生成链表"""
+        step_sort_lst = []
+
+        # 找到头节点
+        first_step = None
+        step_idx = -1
+        for idx, step in enumerate(step_lst):
+            if step.parent_step_id is None:
+                first_step = step
+                step_idx = idx
+                break
+
+        if step_idx == -1:
+            return step_sort_lst
+
+        # 删除找到的头节点
+        del step_lst[step_idx]
+
+        # 生成链表
+        step_sort_lst.append(first_step)
+
+        while len(step_lst) > 0:
+            sort_last_step = step_sort_lst[-1]
+            for idx, step in enumerate(step_lst):
+                if step.parent_step_id == sort_last_step.step_base_id:
+                    step_sort_lst.append(step)
+                    del step_lst[idx]
+                    break
+
+        return step_sort_lst
+
+    def step_info_link(self, obj):
+        # 查询order_type对应的所有步骤
+        step_sort_lst = StepSort.objects.filter(change_record_id=obj.id)
+
+        # 根据parent_step和child_step的关系，生成链表
+        step_sort_lst = self.sort_step(list(step_sort_lst))
+        info_lst = []
+        for step in step_sort_lst:
+            is_skip = step.step_base.is_skip
+            span_color = '#f4f4f5' if is_skip else '#409eff'
+            font_color = '#a2a5aa' if is_skip else '#fff'
+            info_lst.append('<span href="" '
+                            'style="background-color: {};'
+                            'padding: 3px;color:{};'
+                            'border-radius: 3px;'
+                            'white-space: nowrap;">{}</span>'
+                            .format(span_color, font_color, step.step_base.name))
+        step_info = ' -> '.join(info_lst)
+        return format_html(step_info)
 
 
 # @admin.register(StepSort)

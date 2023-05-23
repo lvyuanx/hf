@@ -104,22 +104,22 @@ const submit = async () => {
   let setpList: IStepBase[] = selectStepList.value
   for (let i = 0; i < setpList?.length; i++) {
     let curr = setpList[i]
-    let parent = i > 0 ? setpList[i - 1].id : ""
-    let next = i < setpList?.length - 1 ? setpList[i + 1].id : ""
+    let parent = i > 0 ? setpList[i - 1].id : undefined
+    let next = i < setpList?.length - 1 ? setpList[i + 1].id : undefined
 
     let setp: IStepSort = {
       id: "",
       name: curr.name,
       step_base: curr.id,
-      parent_setp: parent,
-      child_setp: next,
+      parent_step_id: parent,
+      child_step_id: next,
       is_skip: curr.is_skip
     }
     stepSortList.push(setp)
   }
   let data = {
     ...formData,
-    stepSort: stepSortList
+    step_sort: stepSortList
   }
   try {
     const result = await request.http<IResult<any>>("post_setpSortEdit", {}, data)

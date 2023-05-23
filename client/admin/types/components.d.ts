@@ -9,8 +9,6 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    DashboradCard: typeof import('./../src/components/dashborad-card/index.vue')['default']
-    DashboradCardIndex: typeof import('./../src/components/dashborad/dashborad-card/dashborad-card-index.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElCol: typeof import('element-plus/es')['ElCol']
@@ -30,13 +28,9 @@ declare module '@vue/runtime-core' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Flip: typeof import('./../src/components/Flip/index.vue')['default']
-    HistoryOrder: typeof import('./../src/components/Echarts/HistoryOrder.vue')['default']
-    HorizontalDiagram: typeof import('./../src/components/Echarts/HorizontalDiagram.vue')['default']
     IEpPicture: typeof import('~icons/ep/picture')['default']
-    ReceivingQuantity: typeof import('./../src/components/Echarts/ReceivingQuantity.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Stock: typeof import('./../src/components/Echarts/Stock.vue')['default']
     Table: typeof import('./../src/components/Table/index.vue')['default']
   }
   export interface ComponentCustomProperties {

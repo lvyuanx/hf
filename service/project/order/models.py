@@ -70,6 +70,7 @@ class OrderDetail(models.Model):
 class StepBase(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name="步骤名称")
     notes = models.TextField(blank=True, verbose_name="备注")
+    is_skip = models.BooleanField(default=False, verbose_name="是否跳过")
 
     def __str__(self):
         return self.name
@@ -80,12 +81,23 @@ class StepBase(models.Model):
         db_table = f"{prefix}_step_base"
 
 
+class StepSortChangeRecord(models.Model):
+    order_type = models.ForeignKey(OrderType, on_delete=models.CASCADE, db_constraint=False, verbose_name="订单类型")
+    notes = models.TextField(blank=True, verbose_name="备注")
+    is_delete = models.BooleanField(default=False, verbose_name="是否删除")
+
+    class Meta:
+        verbose_name = "步骤排序变更记录"
+        verbose_name_plural = "步骤排序变更记录"
+        db_table = f"{prefix}_step_sort_change_record"
+
+
 class StepSort(models.Model):
     step_base = models.ForeignKey(StepBase, on_delete=models.CASCADE, db_constraint=False, verbose_name="步骤")
-    parent_step = models.ForeignKey('self', on_delete=models.SET_NULL, db_constraint=False, null=True, blank=True,
-                                    verbose_name="父步骤", related_name='child_steps')
-    child_step = models.ForeignKey('self', on_delete=models.SET_NULL, db_constraint=False, null=True, blank=True,
-                                   verbose_name="子步骤", related_name="+")
+    change_record = models.ForeignKey(StepSortChangeRecord, on_delete=models.CASCADE, db_constraint=False,
+                                      verbose_name="变更记录")
+    parent_step_id = models.BigIntegerField(null=True, blank=True, verbose_name="父步骤")
+    child_step_id = models.BigIntegerField(null=True, blank=True, verbose_name="子步骤")
     is_skip = models.BooleanField(default=True, verbose_name="是否跳过")
 
     def __str__(self):
@@ -95,18 +107,6 @@ class StepSort(models.Model):
         verbose_name = "步骤排序"
         verbose_name_plural = "步骤排序"
         db_table = f"{prefix}_step_sort"
-
-
-class StepSortChangeRecord(models.Model):
-    step_sort_first = models.ForeignKey(StepSort, on_delete=models.CASCADE, db_constraint=False, verbose_name="步骤排序")
-    order_type = models.ForeignKey(OrderType, on_delete=models.CASCADE, db_constraint=False, verbose_name="订单类型")
-    notes = models.TextField(blank=True, verbose_name="备注")
-    is_delete = models.BooleanField(default=False, verbose_name="是否删除")
-
-    class Meta:
-        verbose_name = "步骤排序变更记录"
-        verbose_name_plural = "步骤排序变更记录"
-        db_table = f"{prefix}_step_sort_change_record"
 
 
 class StepRecord(models.Model):

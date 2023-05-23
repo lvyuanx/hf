@@ -15,7 +15,7 @@ declare interface IStepSort {
   id: number | string;
   name: string;
   step_base: number | string;
-  parent_setp: number | string;
-  child_setp: number | string;
+  parent_step_id?: number | string;
+  child_step_id?: number | string;
   is_skip: boolean;
 }

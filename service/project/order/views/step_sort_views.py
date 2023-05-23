@@ -17,17 +17,22 @@ class StepSortView(ModelViewSet):
         """修改流程步骤"""
         order_type = request.data.get("order_type")
         notes = request.data.get("notes")
-        serializer = self.get_serializer(data=request.data.get("stepSort"), many=True)
+        record_obj = StepSortChangeRecord(order_type_id=order_type,
+                                          notes=notes)
+        record_obj.save()
+
+        step_sort = request.data.get("step_sort")
+        for s in step_sort:
+            s["change_record"] = record_obj.id
+        serializer = self.get_serializer(data=step_sort, many=True)
 
         if not serializer.is_valid():
             return LResponse(data=serializer.errors).error(msg="订单流程错误！")
 
         serializer.save()
 
-        record_obj = StepSortChangeRecord(order_type_id=order_type,
-                                          notes=notes,
-                                          step_sort_first_id=serializer.data[0]["id"])
-
-        record_obj.save()
+        StepSortChangeRecord.objects.filter(order_type_id=order_type) \
+            .exclude(id=record_obj.id, is_delete=False) \
+            .update(is_delete=True)
 
         return LResponse().ok()
