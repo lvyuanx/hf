@@ -65,12 +65,19 @@ SIMPLEUI_CONFIG = {
             'app': 'auth',
             'name': '权限认证',
             'icon': 'fas fa-user-shield',
-            'models': [{
-                'name': '用户',
-                'icon': 'fa fa-user',
-                'url': 'auth/user/'
-            }]
+            'models': [
+                {
+                    'name': '用户',
+                    'icon': 'fa fa-user',
+                    'url': 'auth/user/'
+                },
+                {
+                    'name': '用户组',
+                    'icon': 'fa fa-th-list',
+                    'url': 'auth/group/'
+                }
 
+            ]
         }
     ]
 }

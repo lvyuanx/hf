@@ -37,11 +37,20 @@ const routes: RouteRecordRaw[] = [
       title: "订单列表",
     }
   },
-
+  {
+    path: '/order/step-edit/:id',
+    name: 'order-step-change',
+    component: () => import('@/views/order/order-step-edit-index.vue'),
+    meta: {
+      index: 100,
+      isAuthorized: false,
+      title: "编辑流程",
+    }
+  },
   {
     path: '/order/step-edit',
     name: 'order-step-edit',
-    component: () => import('@/views/order/order-setp-edit-index.vue'),
+    component: () => import('@/views/order/order-step-edit-index.vue'),
     meta: {
       index: 100,
       isAuthorized: false,

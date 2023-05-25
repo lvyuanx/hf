@@ -15,6 +15,7 @@
   background-color: white;
   box-shadow: 0 0 10px #ccc;
   padding: 3vmax 13vmax;
+  overflow: auto;
 }
 
 .ml-3 {
@@ -40,7 +41,8 @@
 
 .sort-list-box {
   border: 1px solid #ccc;
-  min-height: 400px;
+  min-height: 300px;
+  padding-bottom: 2rem;
 }
 
 .sort-list-title {

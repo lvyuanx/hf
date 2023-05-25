@@ -4,7 +4,7 @@
       <el-row>
         <el-col :span="12">
           <el-form-item label="流程类型" prop="order_type">
-            <el-select v-model="formData.order_type" placeholder="请选项类型">
+            <el-select v-model="formData.order_type" :disabled="!isChangeType" placeholder="请选项类型">
               <el-option v-for="ot in orderTypeList" :key="ot.id" :label="ot.name" :value="ot.id" />
             </el-select>
           </el-form-item>
@@ -48,7 +48,7 @@
     </el-form>
 
     <div class="btn-box">
-      <el-button type="primary" @click="submit">提交</el-button>
+      <el-button type="primary" @click="confirm_submit">提交</el-button>
       <el-button @click="back">返回</el-button>
     </div>
 
@@ -77,19 +77,78 @@ import { Plus } from "@element-plus/icons-vue"
 import request from "@/utils/request"
 import { ElMessage, FormInstance, FormRules } from "element-plus"
 import { isEmpty } from "@/utils/utils"
-import useDragList from "@/utils/dragList"
-import { number } from "echarts"
 import FLIPWrapper from "@/components/Flip/index.vue"
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { StepOrderChangeRecord, StepBase, StepSort } from './interfaces/order-step';
 
 let dialogStepBaseTableVisible = ref(false)
 
+let route = useRoute()
 let router = useRouter()
 const back = () => {
   router.back()
 }
+let isChangeType = ref(true)
+
+onMounted(async () => {
+  let recordId = route.params.id
+  try {
+    await findAllTypes()
+    await findAllSteps()
+    ondragList()
+
+    if (isEmpty(recordId)) { return }
+    isChangeType.value = false
+    const stepCR = await request.http<IResult<StepOrderChangeRecord>>("get_setpSortCR", {}, {}, { id: recordId })
+    let { notes, order_type } = stepCR.data
+    formData.notes = notes
+    formData.order_type = order_type
+    const stepBases = await request.http<IResult<StepSort[]>>("get_setpSortByRid", { record_id: recordId }, {})
+    stepBases.data.forEach(sb => {
+      let selectSb = stepBaseList.value.filter(s => s.id === sb.step_base)
+      if (selectSb) {
+        selectStepList.value.push(selectSb[0])
+      }
+    })
+    stepBaseList.value = markCheckedItems(stepBaseList.value, selectStepList.value)
+  } catch (error) {
+    console.log(error)
+    back()
+  }
+})
+
+function markCheckedItems(items: StepBase[], checkedItems: StepBase[]): StepBase[] {
+  // 构建一个字典，用于快速查找已选中的项
+  const dict: Record<number | string, boolean> = {};
+  for (const item of checkedItems) {
+    dict[item.id] = true;
+  }
+
+  // 遍历未选中的项，为匹配的项添加 isCheck 属性
+  const result: StepBase[] = [];
+  for (const item of items) {
+    if (dict[item.id]) {
+      result.push({ ...item, isCheck: true });
+    } else {
+      result.push(item);
+    }
+  }
+
+  return result;
+}
 
 let setpFormRef = ref<FormInstance>()
+const confirm_submit = () => {
+  if (isChangeType.value) {
+    submit()
+    return
+  }
+  ElMessageBox.confirm('修改流程，该类型已有订单流程不变，新创建订单将执行新的流程！', '消息提醒', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(submit)
+}
 const submit = async () => {
   let formEl: FormInstance | undefined = setpFormRef.value
   if (!formEl) return
@@ -100,14 +159,14 @@ const submit = async () => {
   if (isEmpty(selectStepList.value)) {
     ElMessage.warning("流程不能为空！")
   }
-  let stepSortList: IStepSort[] = []
-  let setpList: IStepBase[] = selectStepList.value
+  let stepSortList: StepSort[] = []
+  let setpList: StepBase[] = selectStepList.value
   for (let i = 0; i < setpList?.length; i++) {
     let curr = setpList[i]
     let parent = i > 0 ? setpList[i - 1].id : undefined
     let next = i < setpList?.length - 1 ? setpList[i + 1].id : undefined
 
-    let setp: IStepSort = {
+    let setp: StepSort = {
       id: "",
       name: curr.name,
       step_base: curr.id,
@@ -122,7 +181,14 @@ const submit = async () => {
     step_sort: stepSortList
   }
   try {
-    const result = await request.http<IResult<any>>("post_setpSortEdit", {}, data)
+    await request.http<IResult<any>>("post_setpSortEdit", {}, data)
+    ElMessageBox.alert('编辑成功！', '消息提醒', {
+      confirmButtonText: '确定',
+      type: "success",
+      callback: () => {
+        router.back()
+      },
+    })
   } catch (error) {
     console.log(error)
   }
@@ -139,15 +205,6 @@ const rules = reactive<FormRules>({
   ],
 })
 
-onMounted(async () => {
-  await findAllTypes()
-  await findAllSteps()
-
-  ondragList()
-
-})
-
-
 let orderTypeList = ref<IOrderType[]>([])
 // 查询所有类型
 const findAllTypes = async () => {
@@ -158,8 +215,8 @@ const findAllTypes = async () => {
     console.log(error)
   }
 }
-let stepBaseList = ref<IStepBase[]>([])
-let selectStepList = ref<IStepBase[]>([])
+let stepBaseList = ref<StepBase[]>([])
+let selectStepList = ref<StepBase[]>([])
 watch(
   () => stepBaseList.value,
   (newList, oldList) => {
@@ -206,9 +263,9 @@ const ondragList = () => {
         let sourceId = sourceNode.getAttribute("itemKey") as string
         let targetId = e.target.getAttribute("itemKey") as string
         if (sourceIndex < targetIndex) {
-          changeOrder<IStepBase>(selectStepList, sourceId, targetId);
+          changeOrder<StepBase>(selectStepList, sourceId, targetId);
         } else {
-          changeOrder<IStepBase>(selectStepList, sourceId, targetId);
+          changeOrder<StepBase>(selectStepList, sourceId, targetId);
         }
       }
     }
@@ -246,7 +303,7 @@ function changeOrder<T extends { id: string | number }>(list: Ref<T[]>, id1: str
 // 查询所有流程
 const findAllSteps = async () => {
   try {
-    const result = await request.http<IResult<IStepBase[]>>("get_setpBaseList", {}, {})
+    const result = await request.http<IResult<StepBase[]>>("get_setpBaseList", {}, {})
     let data = result.data
     data.forEach(item => {
       item["isCheck"] = false
@@ -260,5 +317,5 @@ const findAllSteps = async () => {
 </script>
 
 <style lang="scss" scoped>
-@import url("./order-setp-edit-index.scss");
+@import "./order-step-edit-index.scss";
 </style>
