@@ -75,11 +75,12 @@
 import { ref, onMounted, nextTick } from 'vue';
 import { Plus } from "@element-plus/icons-vue"
 import request from "@/utils/request"
-import { ElMessage, FormInstance, FormRules } from "element-plus"
+import { ElMessage, ElMessageBox, FormInstance, FormRules } from "element-plus"
 import { isEmpty } from "@/utils/utils"
 import FLIPWrapper from "@/components/Flip/index.vue"
 import { useRoute, useRouter } from 'vue-router';
 import { StepOrderChangeRecord, StepBase, StepSort } from './interfaces/order-step';
+import { OrderType } from './interfaces/order-list';
 
 let dialogStepBaseTableVisible = ref(false)
 
@@ -205,11 +206,11 @@ const rules = reactive<FormRules>({
   ],
 })
 
-let orderTypeList = ref<IOrderType[]>([])
+let orderTypeList = ref<OrderType[]>([])
 // 查询所有类型
 const findAllTypes = async () => {
   try {
-    const result = await request.http<IResult<IOrderType[]>>("get_orderTypeList", {}, {})
+    const result = await request.http<IResult<OrderType[]>>("get_orderTypeList", {}, {})
     orderTypeList.value = result.data
   } catch (error) {
     console.log(error)

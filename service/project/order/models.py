@@ -54,6 +54,7 @@ class OrderList(models.Model):
 
 class OrderDetail(models.Model):
     order_number = models.IntegerField(verbose_name="数量")
+    order_price = models.FloatField(verbose_name="单价", default=0.0)
     color = models.CharField(max_length=100, null=True, verbose_name="颜色")
     order_list = models.ForeignKey(OrderList, on_delete=models.CASCADE, db_constraint=False, verbose_name="所属订单")
     notes = models.TextField(blank=True, verbose_name="备注")

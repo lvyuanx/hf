@@ -19,14 +19,14 @@
       </el-form-item>
 
 
-      <el-form-item label="订单工艺">
+      <el-form-item prop="order_technology" label="订单工艺">
         <el-input v-model="formData.order_technology" placeholder="请输入工艺" />
       </el-form-item>
 
       <el-form-item label="订单项">
         <Table :table-data="tableData" :table-title="tableTitle">
           <template #right>
-            <el-table-column align="right" fixed="right">
+            <el-table-column align="right" fixed="right" width="180">
               <template #header>
                 <el-tooltip class="box-item" effect="dark" content="添加订单项" placement="top-end">
                   <el-button type="primary" class="add-btn" :icon="Plus" circle @click="addOrderDetail"></el-button>
@@ -39,6 +39,9 @@
             </el-table-column>
           </template>
         </Table>
+      </el-form-item>
+      <el-form-item label="订单总价">
+        <el-input v-model="totalPrice" disabled />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm">确定</el-button>
@@ -128,7 +131,16 @@
 
         <el-form-item prop="order_number" label="订单数量">
           <el-input-number v-model="orderDetail.order_number" :min="1"
-            @change="(cur, pre) => { orderDetail.order_number = cur ?? 0 }" />
+            @change="(cur, pre) => { orderDetail.order_number = cur ?? 1 }" />
+        </el-form-item>
+
+        <el-form-item prop="order_price" label="单价(元)">
+          <el-input-number v-model="orderDetail.order_price" :min="0.01" :precision="2"
+            @change="(cur, pre) => { orderDetail.order_price = cur ?? 0.01 }" />
+        </el-form-item>
+
+        <el-form-item label="总价(元)">
+          <el-input :value="orderDetail.order_price * orderDetail.order_number" :precision="2" disabled />
         </el-form-item>
 
         <el-form-item prop="color" label="颜色">
@@ -159,6 +171,7 @@ import { Plus } from "@element-plus/icons-vue"
 import { isEmpty } from '@/utils/utils'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox, FormInstance, FormRules } from 'element-plus'
+import { OrderBase, OrderDetail, OrderList } from './interfaces/order-list'
 
 let router = useRouter()
 let route = useRoute()
@@ -170,7 +183,7 @@ onMounted(async () => {
   let baseId = route.params.id
   if (!isEmpty(baseId)) {
     try {
-      const orderListResult = await request.http<IResult<IOrderList>>("get_orderList", {}, {}, { id: baseId })
+      const orderListResult = await request.http<IResult<OrderList>>("get_orderList", {}, {}, { id: baseId })
       let orderListData = orderListResult.data
 
       if (isEmpty(orderListData)) {
@@ -183,11 +196,11 @@ onMounted(async () => {
       formData.order_base = orderListData?.order_base as number
       formData.order_technology = orderListData?.order_technology as string
 
-      let { customer, order_base } = orderListData as IOrderList
+      let { customer, order_base } = orderListData as OrderList
 
-      const orderBaseResult = await request.http<IResult<IOrderBase>>("get_orderBase", {}, {}, { id: order_base })
+      const orderBaseResult = await request.http<IResult<OrderBase>>("get_orderBase", {}, {}, { id: order_base })
       if (!isEmpty(orderBaseResult.data)) {
-        let { order_code, model_base_name, order_product } = orderBaseResult.data as IOrderBase
+        let { order_code, model_base_name, order_product } = orderBaseResult.data as OrderBase
         formShow.value.orderValue = `${order_code}-${model_base_name}-${order_product}`
       }
 
@@ -197,9 +210,9 @@ onMounted(async () => {
         formShow.value.customerValue = `${name}-${company_name}-${contact_number}`
       }
 
-      const orderDetailResult = await request.http<IResult<IOrderDetail[]>>("get_findDetailByList", { list_id: orderListData?.id }, {})
+      const orderDetailResult = await request.http<IResult<OrderDetail[]>>("get_findDetailByList", { list_id: orderListData?.id }, {})
       if (!isEmpty(orderDetailResult.data)) {
-        tableData.value = orderDetailResult.data as IOrderDetail[]
+        tableData.value = orderDetailResult.data as OrderDetail[]
       }
     } catch (error) {
       console.log(error)
@@ -232,7 +245,7 @@ let formShow = ref({
 })
 
 // 表单实际的值
-let formData = reactive<IOrderList>({
+let formData = reactive<OrderList>({
   id: "",
   order_base: "",
   customer: "",
@@ -247,6 +260,9 @@ const rules = reactive<FormRules>({
   ],
   customer: [
     { required: true, message: '请选择客户！', trigger: 'blur' }
+  ],
+  order_technology: [
+    { required: true, message: '请选输入工艺！', trigger: 'blur' }
   ],
 })
 
@@ -295,7 +311,7 @@ const selectOrderBase = async () => {
     code_or_name: searchOrder.value,
     page: orderPage.currentPage
   }
-  let result = await request.http<IPageResult<IOrderBase>>("get_orderLike", params)
+  let result = await request.http<IPageResult<OrderBase>>("get_orderLike", params)
   if (result.code == 200 && result.data) {
     let data = result.data
     orderBaseData.value = data.results
@@ -310,7 +326,7 @@ const changeOrderBasePage = async (page: number) => {
   await selectOrderBase()
 
 }
-const handleSelectOrder = (idx: number, order: IOrderBase) => {
+const handleSelectOrder = (idx: number, order: OrderBase) => {
   console.log(order)
   formData.order_base = order.id
   formShow.value.orderValue = `${order.order_code} - ${order.model_base_name} - ${order.order_product}`
@@ -350,13 +366,26 @@ const handleSelectCustomer = (idx: number, customer: ICustomer) => {
 }
 
 // Table表单定义
-const tableData = ref<IOrderDetail[]>([])
+const tableData = ref<OrderDetail[]>([])
+let totalPrice = ref(0)
+watch(() => tableData.value, (newValue) => {
+  totalPrice.value = 0
+  newValue.forEach(item => {
+    item.order_total_price = item.order_price * item.order_number
+    totalPrice.value += item.order_total_price
+  })
+}, {
+  immediate: true,
+  deep: true
+})
 const tableTitle = [
   { prop: 'color', lable: "颜色" },
   { prop: 'order_number', lable: "数量" },
+  { prop: 'order_price', lable: "单价(元)" },
+  { prop: 'order_total_price', lable: "总价(元)" },
   { prop: 'notes', lable: "备注" },
 ]
-const orderBaseData = ref<IOrderBase[]>([])
+const orderBaseData = ref<OrderBase[]>([])
 const orderBaseTableTitle = [
   { prop: 'order_code', lable: '款号' },
   { prop: 'order_type_name', lable: '订单类型' },
@@ -373,12 +402,13 @@ const customerTableTitle = [
 ]
 
 let orderDetailTitle = ref("")
-let orderDetail = ref<IOrderDetail>({
+let orderDetail = ref<OrderDetail>({
   id: "",
   color: "",
   order_list_id: "",
   notes: "",
   order_number: 0,
+  order_price: 0.0,
   temp_id: ""
 })
 
@@ -388,7 +418,10 @@ const detailRules = reactive<FormRules>({
     { required: true, message: '请输入颜色！', trigger: 'blur' }
   ],
   order_number: [
-    { required: true, message: '请选择客户！', trigger: 'blur' }
+    { required: true, message: '请输入数量！', trigger: 'blur' }
+  ],
+  order_price: [
+    { required: true, message: '请输入单价！', trigger: 'blur' }
   ],
 })
 const addOrderDetail = () => {
@@ -396,7 +429,13 @@ const addOrderDetail = () => {
   orderDetailTitle.value = "添加订单项"
   orderDetail.value.temp_id = new Date().getTime() // 临时id
 }
-const editDtail = () => {
+const editDtail = async () => {
+  let formEl: FormInstance | undefined = customerDetailFormRef.value
+  if (!formEl) return
+  const valid = await formEl.validate()
+  if (!valid) {
+    return
+  }
   let isTempId = true
   // 是否是临时id
   if (!isEmpty(orderDetail.value.id)) {
@@ -405,7 +444,7 @@ const editDtail = () => {
 
   let updateIdx = -1
 
-  tableData.value.forEach((item: IOrderDetail, idx: number) => {
+  tableData.value.forEach((item: OrderDetail, idx: number) => {
     if (isTempId) {
       if (!isEmpty(item.temp_id) && item.temp_id == orderDetail.value.temp_id) {
         updateIdx = idx
@@ -429,19 +468,20 @@ const editDtail = () => {
     order_list_id: "",
     notes: "",
     order_number: 0,
+    order_price: 0.0,
     temp_id: ""
   }
 
   dialogOrderDetailTableVisible.value = false
 }
 
-const handleEdit = (idx: number, data: IOrderDetail) => {
+const handleEdit = (idx: number, data: OrderDetail) => {
   orderDetail.value = data
   dialogOrderDetailTableVisible.value = true
 }
-const handleDelete = (idx: number, data: IOrderDetail) => {
+const handleDelete = (idx: number, data: OrderDetail) => {
   let delIdx = -1
-  tableData.value.forEach((item: IOrderDetail, idx: number) => {
+  tableData.value.forEach((item: OrderDetail, idx: number) => {
     if (!isEmpty(data.temp_id)) {
       if (!isEmpty(item.temp_id) && data.temp_id == item.temp_id) {
         delIdx = idx
@@ -460,5 +500,5 @@ const handleDelete = (idx: number, data: IOrderDetail) => {
 </script>
 
 <style lang="scss" scoped>
-@import url("./order-list-edit-index.scss")
+@import "./order-list-edit-index.scss"
 </style>
