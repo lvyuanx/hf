@@ -1,16 +1,8 @@
 <template>
   <transition-group name="FLIP-wrapper">
-    <slot>
-
-    </slot>
+    <slot></slot>
   </transition-group>
 </template>
-
-<script>
-export default {
-  name: "FLIPWrapper"
-};
-</script>
 
   <!--注意这里的style不能用scoped，否则过渡效果会失效-->
 <style>
@@ -24,11 +16,8 @@ export default {
 }
 
 /*元素进入前和离开后的相关样式*/
-.FLIP-wrapper-enter,
-.FLIP-wrapper-leave-to
-
-/* .component-fade-leave-active for below version 2.1.8 */
-  {
+.FLIP-wrapper-enter-from,
+.FLIP-wrapper-leave-to {
   opacity: 0;
   transform: translateY(-100%) scale(0.1);
 }
