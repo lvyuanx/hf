@@ -1,0 +1,21 @@
+.setp-default-item-container {
+  width: 100%;
+  min-height: 70px;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.empty-box {
+  min-height: 30px;
+}
+
+.step-info-container {
+  .step-title {
+    font-weight: 600;
+  }
+
+  .step-info {
+    font-weight: 400;
+  }
+
+}

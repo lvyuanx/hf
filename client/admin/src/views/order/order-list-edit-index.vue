@@ -1,166 +1,171 @@
 <template>
-  <div class='order-container' v-loading="loadingPage" element-loading-text="加载中...">
-    <!-- form start -->
-    <el-form :model="formData" label-position="right" ref="orderListFormRef" :rules="rules" label-width="120px">
-      <el-form-item prop="order_base" label="订单款号">
-        <el-input v-model="formShow.orderValue" disabled placeholder="请选择款号">
-          <template #append>
-            <el-button @click="selectOrderBase">选择款号</el-button>
-          </template>
-        </el-input>
-      </el-form-item>
+  <div class="order-list-container">
+    <div class='order-container' v-loading="loadingPage" element-loading-text="加载中...">
+      <!-- form start -->
+      <el-form :model="formData" label-position="right" ref="orderListFormRef" :rules="rules" label-width="120px">
+        <el-form-item prop="order_base" label="订单款号">
+          <el-input v-model="formShow.orderValue" disabled placeholder="请选择款号">
+            <template #append>
+              <el-button @click="selectOrderBase">选择款号</el-button>
+            </template>
+          </el-input>
+        </el-form-item>
 
-      <el-form-item prop="customer" label="订单客户">
-        <el-input v-model="formShow.customerValue" disabled placeholder="请选客户">
-          <template #append>
-            <el-button @click="selectCustomer">选择客户</el-button>
-          </template>
-        </el-input>
-      </el-form-item>
+        <el-form-item prop="customer" label="订单客户">
+          <el-input v-model="formShow.customerValue" disabled placeholder="请选客户">
+            <template #append>
+              <el-button @click="selectCustomer">选择客户</el-button>
+            </template>
+          </el-input>
+        </el-form-item>
 
 
-      <el-form-item prop="order_technology" label="订单工艺">
-        <el-input v-model="formData.order_technology" placeholder="请输入工艺" />
-      </el-form-item>
+        <el-form-item prop="order_technology" label="订单工艺">
+          <el-input v-model="formData.order_technology" placeholder="请输入工艺" />
+        </el-form-item>
 
-      <el-form-item label="订单项">
-        <Table :table-data="tableData" :table-title="tableTitle">
+        <el-form-item label="订单项">
+          <Table :table-data="tableData" :table-title="tableTitle">
+            <template #right>
+              <el-table-column align="right" fixed="right" width="180">
+                <template #header>
+                  <el-tooltip class="box-item" effect="dark" content="添加订单项" placement="top-end">
+                    <el-button type="primary" class="add-btn" :icon="Plus" circle @click="addOrderDetail"></el-button>
+                  </el-tooltip>
+                </template>
+                <template #default="scope">
+                  <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                  <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                </template>
+              </el-table-column>
+            </template>
+          </Table>
+        </el-form-item>
+        <el-form-item label="订单总价">
+          <el-input v-model="totalPrice" disabled />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm">确定</el-button>
+          <el-button @click="back">返回</el-button>
+        </el-form-item>
+      </el-form>
+      <!-- form end -->
+
+      <!-- 选择款号 start -->
+      <el-dialog v-model="dialogOrderBaseTableVisible" title="请选择款号">
+        <el-row style="margin-bottom: 10px;">
+          <el-col :span="12">
+          </el-col>
+          <el-col :span="8">
+            <el-input v-model="searchOrder" placeholder="请输入款号或者产品名称进行搜索" />
+          </el-col>
+          <el-col :span="4">
+            <el-button style="width: 100%;" @click="selectOrderBase">搜索</el-button>
+          </el-col>
+        </el-row>
+        <Table :table-data="orderBaseData" :table-title="orderBaseTableTitle" :page="orderPage"
+          @changePage="changeOrderBasePage">
           <template #right>
-            <el-table-column align="right" fixed="right" width="180">
+            <el-table-column align="right" fixed="right">
               <template #header>
-                <el-tooltip class="box-item" effect="dark" content="添加订单项" placement="top-end">
-                  <el-button type="primary" class="add-btn" :icon="Plus" circle @click="addOrderDetail"></el-button>
-                </el-tooltip>
+                操作
               </template>
               <template #default="scope">
-                <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                <el-button type="primary" size="small" @click="handleSelectOrder(scope.$index, scope.row)">选择</el-button>
               </template>
             </el-table-column>
           </template>
         </Table>
-      </el-form-item>
-      <el-form-item label="订单总价">
-        <el-input v-model="totalPrice" disabled />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm">确定</el-button>
-        <el-button @click="back">返回</el-button>
-      </el-form-item>
-    </el-form>
-    <!-- form end -->
+      </el-dialog>
+      <!-- 选择款号 end -->
 
-    <!-- 选择款号 start -->
-    <el-dialog v-model="dialogOrderBaseTableVisible" title="请选择款号">
-      <el-row style="margin-bottom: 10px;">
-        <el-col :span="12">
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="searchOrder" placeholder="请输入款号或者产品名称进行搜索" />
-        </el-col>
-        <el-col :span="4">
-          <el-button style="width: 100%;" @click="selectOrderBase">搜索</el-button>
-        </el-col>
-      </el-row>
-      <Table :table-data="orderBaseData" :table-title="orderBaseTableTitle" :page="orderPage"
-        @changePage="changeOrderBasePage">
-        <template #right>
-          <el-table-column align="right" fixed="right">
-            <template #header>
-              操作
-            </template>
-            <template #default="scope">
-              <el-button type="primary" size="small" @click="handleSelectOrder(scope.$index, scope.row)">选择</el-button>
-            </template>
-          </el-table-column>
-        </template>
-      </Table>
-    </el-dialog>
-    <!-- 选择款号 end -->
-
-    <!-- 选择客户 start -->
-    <el-dialog v-model="dialogCustomerTableVisible" title="请选客户">
-      <el-row style="margin-bottom: 10px;">
-        <el-col :span="12">
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="searchCustomer" placeholder="请输入客户名/电话/公司名称进行搜索" />
-        </el-col>
-        <el-col :span="4">
-          <el-button style="width: 100%;" @click="selectCustomer">搜索</el-button>
-        </el-col>
-      </el-row>
-      <Table :table-data="customerData" :table-title="customerTableTitle" :page="customerPage"
-        @changePage="changeOrderBasePage">
-        <template #left>
-          <el-table-column align="left">
-            <template #header>
-              头像
-            </template>
-            <template #default="scope">
-              <el-image style="width: 100%;" :src="scope.row.avatar" fit="cover">
-                <template #error>
-                  <div class="image-slot">
-                    <el-icon><i-ep-picture /></el-icon>
-                  </div>
-                </template>
-              </el-image>
-            </template>
-          </el-table-column>
-        </template>
-        <template #right>
-          <el-table-column align="right" fixed="right">
-            <template #header>
-              操作
-            </template>
-            <template #default="scope">
-              <el-button type="primary" size="small" @click="handleSelectCustomer(scope.$index, scope.row)">选择</el-button>
-            </template>
-          </el-table-column>
-        </template>
-      </Table>
-    </el-dialog>
-    <!-- 选择客户 end -->
+      <!-- 选择客户 start -->
+      <el-dialog v-model="dialogCustomerTableVisible" title="请选客户">
+        <el-row style="margin-bottom: 10px;">
+          <el-col :span="12">
+          </el-col>
+          <el-col :span="8">
+            <el-input v-model="searchCustomer" placeholder="请输入客户名/电话/公司名称进行搜索" />
+          </el-col>
+          <el-col :span="4">
+            <el-button style="width: 100%;" @click="selectCustomer">搜索</el-button>
+          </el-col>
+        </el-row>
+        <Table :table-data="customerData" :table-title="customerTableTitle" :page="customerPage"
+          @changePage="changeOrderBasePage">
+          <template #left>
+            <el-table-column align="left">
+              <template #header>
+                头像
+              </template>
+              <template #default="scope">
+                <el-image style="width: 100%;" :src="scope.row.avatar" fit="cover">
+                  <template #error>
+                    <div class="image-slot">
+                      <el-icon><i-ep-picture /></el-icon>
+                    </div>
+                  </template>
+                </el-image>
+              </template>
+            </el-table-column>
+          </template>
+          <template #right>
+            <el-table-column align="right" fixed="right">
+              <template #header>
+                操作
+              </template>
+              <template #default="scope">
+                <el-button type="primary" size="small"
+                  @click="handleSelectCustomer(scope.$index, scope.row)">选择</el-button>
+              </template>
+            </el-table-column>
+          </template>
+        </Table>
+      </el-dialog>
+      <!-- 选择客户 end -->
 
 
-    <!-- 编辑订单项 start -->
-    <el-dialog v-model="dialogOrderDetailTableVisible" :title="orderDetailTitle">
+      <!-- 编辑订单项 start -->
+      <el-dialog v-model="dialogOrderDetailTableVisible" :title="orderDetailTitle">
 
-      <el-form :model="orderDetail" label-position="right" ref="customerDetailFormRef" :rules="detailRules"
-        label-width="80px">
+        <el-form :model="orderDetail" label-position="right" ref="customerDetailFormRef" :rules="detailRules"
+          label-width="80px">
 
-        <el-form-item prop="order_number" label="订单数量">
-          <el-input-number v-model="orderDetail.order_number" :min="1"
-            @change="(cur, pre) => { orderDetail.order_number = cur ?? 1 }" />
-        </el-form-item>
+          <el-form-item prop="order_number" label="订单数量">
+            <el-input-number v-model="orderDetail.order_number" :min="1"
+              @change="(cur, pre) => { orderDetail.order_number = cur ?? 1 }" />
+          </el-form-item>
 
-        <el-form-item prop="order_price" label="单价(元)">
-          <el-input-number v-model="orderDetail.order_price" :min="0.01" :precision="2"
-            @change="(cur, pre) => { orderDetail.order_price = cur ?? 0.01 }" />
-        </el-form-item>
+          <el-form-item prop="order_price" label="单价(元)">
+            <el-input-number v-model="orderDetail.order_price" :min="0.01" :precision="2"
+              @change="(cur, pre) => { orderDetail.order_price = cur ?? 0.01 }" />
+          </el-form-item>
 
-        <el-form-item label="总价(元)">
-          <el-input :value="orderDetail.order_price * orderDetail.order_number" :precision="2" disabled />
-        </el-form-item>
+          <el-form-item label="总价(元)">
+            <el-input :value="orderDetail.order_price * orderDetail.order_number" :precision="2" disabled />
+          </el-form-item>
 
-        <el-form-item prop="color" label="颜色">
-          <el-input v-model="orderDetail.color" placeholder="请输入颜色" />
-        </el-form-item>
-        <el-form-item prop="notes" label="备注">
-          <el-input v-model="orderDetail.notes" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
-            placeholder="请输入备注信息" />
-        </el-form-item>
+          <el-form-item prop="color" label="颜色">
+            <el-input v-model="orderDetail.color" placeholder="请输入颜色" />
+          </el-form-item>
+          <el-form-item prop="notes" label="备注">
+            <el-input v-model="orderDetail.notes" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
+              placeholder="请输入备注信息" />
+          </el-form-item>
 
-        <el-form-item>
-          <el-button type="primary" @click="editDtail">确定</el-button>
-          <el-button>取消</el-button>
-        </el-form-item>
-      </el-form>
+          <el-form-item>
+            <el-button type="primary" @click="editDtail">确定</el-button>
+            <el-button>取消</el-button>
+          </el-form-item>
+        </el-form>
 
-    </el-dialog>
-    <!-- 编辑订单项 end -->
+      </el-dialog>
+      <!-- 编辑订单项 end -->
 
-
+    </div>
+    <div class="step-record-container">
+      <StepRecord></StepRecord>
+    </div>
   </div>
 </template>
 
@@ -172,6 +177,7 @@ import { isEmpty } from '@/utils/utils'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox, FormInstance, FormRules } from 'element-plus'
 import { OrderBase, OrderDetail, OrderList } from './interfaces/order-list'
+import StepRecord from "./components/step-record/step-record.vue"
 
 let router = useRouter()
 let route = useRoute()
