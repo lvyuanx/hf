@@ -28,7 +28,7 @@ def sort_steps(steps):
         else:
             parent_step = get_step_obj(parent_id)
             if parent_step is not None:
-                if parent_step.step_base <= step.step_base:
+                if parent_step.step_base.id <= step.step_base.id:
                     result_lst.append(step)
             else:
                 result_lst.append(step)
