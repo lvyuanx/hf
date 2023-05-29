@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "factory",
     "order",
     "web",
+    "staff",
 ]
 
 MIDDLEWARE = [

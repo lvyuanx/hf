@@ -4,7 +4,7 @@ from django.db import models
 
 from customer.utils import get_upload_path
 
-prefiex = "s_customer"
+prefix = "s_customer"
 
 
 class Customer(models.Model):
@@ -20,4 +20,4 @@ class Customer(models.Model):
     class Meta:
         verbose_name = "客户"
         verbose_name_plural = "客户列表"
-        db_table = f"{prefiex}_base"
+        db_table = f"{prefix}_base"
