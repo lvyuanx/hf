@@ -58,6 +58,17 @@ const routes: RouteRecordRaw[] = [
     }
   },
 
+  {
+    path: '/order/staff-edit',
+    name: 'order-staff-edit',
+    component: () => import('@/views/staff/staff-edit-index.vue'),
+    meta: {
+      index: 100,
+      isAuthorized: false,
+      title: "员工信息编辑",
+    }
+  },
+
 ];
 
 // 导出路由

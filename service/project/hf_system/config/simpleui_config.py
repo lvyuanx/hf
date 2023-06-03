@@ -1,8 +1,18 @@
 SIMPLEUI_CONFIG = {
     'system_keep': False,
-    'menu_display': ['客户管理', '工厂管理', '订单管理', '权限认证'],
+    # 'menu_display': ['客户管理', '员工管理', '工厂管理', '订单管理', '权限认证'],
     'dynamic': True,  # 设置是否开启动态菜单, 默认为False. 如果开启, 则会在每次用户登陆时动态展示菜单内容
     'menus': [
+        {
+            'name': '员工管理',
+            'icon': 'fas fa-address-book',
+            'models': [{
+                'name': '员工列表',
+                'icon': 'fa fa-list',
+                'url': 'staff/staffbase/'
+            }]
+
+        },
         {
             'name': '客户管理',
             'icon': 'fas fa-address-book',
