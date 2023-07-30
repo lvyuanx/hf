@@ -13,10 +13,10 @@ class BuildObj(object):
     def get_args(self):
         parser = argparse.ArgumentParser(description='Build vue to django project')
         parser.add_argument('-i', '--input_path', help='输入路径', required=False,
-                            default='D:\\Project\\git\\hf\\client\\admin')
+                            default='D:\\workspace\\project\\git\\hf\\client\\admin')
         parser.add_argument('-o', '--out_path', help='输出路径', required=False,
-                            default='D:\\Project\\git\\hf\\service\\project')
-        parser.add_argument('-c', '--clear', help='清理目标路径', required=False, default=False)
+                            default='D:\\workspace\\project\\git\\hf\\service\\project')
+        parser.add_argument('-c', '--clear', help='清理目标路径', required=False, action='store_true', default=False)
         args = parser.parse_args()
         self.input_path = args.input_path
         self.out_path = args.out_path

@@ -20,7 +20,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'web/static'),
 ]
 # 静态文件映射
-STATIC_ROOT = 'D:\\Project\\git\\hf\\static'
+STATIC_ROOT = 'D:\\workspace\\project\\git\\hf\\service\\static'
 # ####################### 资源配置 end #######################
 
 # ####################### simpleui配置 start #######################
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "adminExt",
     "customer",
     "factory",
     "order",
@@ -61,7 +62,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'hf_system.middleware.FilterMenu',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -69,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'hf_system.middleware.FilterMenu',
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
