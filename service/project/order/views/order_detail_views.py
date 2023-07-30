@@ -3,7 +3,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from hf_system.utils.response_utils import response_ok, response_error, LResponse
 from order.models import OrderDetail
-from order.serializers.OrderSerializer import OrderDetailSerializer
+from order.serializers.order_serializer import OrderDetailSerializer
 
 
 class OrderDetailView(ModelViewSet):

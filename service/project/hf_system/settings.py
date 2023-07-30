@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from django.core.cache.backends.redis import RedisCache
+
 from hf_system.config import simpleui_config
 
 # ####################### 全局配置 start #######################
@@ -69,7 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'hf_system.middleware.FilterMenu',
+    'hf_system.middlewares.simpleui_config_middleware.FilterMenu',
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -111,6 +113,20 @@ DATABASES = {
         },
     }
 }
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'redis_cache.cache.RedisCache',
+#         'LOCATION': '127.0.0.1:6379',
+#         'PASSWORD':'123456',
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "redis_cache.client.DefaultClient",
+#         },
+#     },
+# }
+# REDIS_TIMEOUT=7*24*60*60
+# CUBES_REDIS_TIMEOUT=60*60
+# NEVER_REDIS_TIMEOUT=365*24*60*60
 
 AUTH_PASSWORD_VALIDATORS = [
     {

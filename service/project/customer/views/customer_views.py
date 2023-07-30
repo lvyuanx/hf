@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
 from customer.models import Customer
-from customer.serializers.CustomerSerializers import CustomerSerializer
+from customer.serializers.customer_serializers import CustomerSerializer
 from hf_system.page import CustomPagination
 from hf_system.utils.response_utils import LResponse
 

@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from hf_system.utils.response_utils import response_error, response_ok, LResponse
 from order.models import OrderList
-from order.serializers.OrderSerializer import OrderListSerializer, OrderDetailSerializer
+from order.serializers.order_serializer import OrderListSerializer, OrderDetailSerializer
 
 
 class OrderListView(ModelViewSet):

@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from hf_system.utils.response_utils import LResponse
 from order.models import OrderType
-from order.serializers.OrderSerializer import OrderTypeSerializer
+from order.serializers.order_serializer import OrderTypeSerializer
 
 
 class OrderTypeView(ModelViewSet):

@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from hf_system.page import CustomPagination
 from hf_system.utils.response_utils import page_ok, response_error, response_ok, LResponse
 from order.models import OrderBase
-from order.serializers.OrderSerializer import OrderBaseSerializer, OrderListSerializer
+from order.serializers.order_serializer import OrderBaseSerializer, OrderListSerializer
 
 
 class OrderBaseView(ModelViewSet):
