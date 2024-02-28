@@ -59,8 +59,8 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
-    path: '/order/staff-edit',
-    name: 'order-staff-edit',
+    path: '/staff/edit',
+    name: 'staff-edit',
     component: () => import('@/views/staff/staff-edit-index.vue'),
     meta: {
       index: 100,

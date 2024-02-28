@@ -13,7 +13,8 @@ def staff(instance, filename, img_type='avatar'):
 class StaffBase(models.Model):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE, db_constraint=False, verbose_name="用户")
     staff_code = models.CharField(max_length=100, unique=True, verbose_name="员工编号")
-    phone_number = models.CharField(max_length=100, verbose_name="手机号")
+    full_name = models.CharField(max_length=100, verbose_name="员工姓名", null=True)
+    phone_number = models.CharField(max_length=100, null=True, blank=True, verbose_name="手机号")
     avatar = models.ImageField(upload_to=staff, null=True, blank=True, verbose_name="头像")
     notes = models.TextField(blank=True, verbose_name="备注")
 

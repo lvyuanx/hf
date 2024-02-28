@@ -1,9 +1,12 @@
 .staff-edit-container {
   width: 100%;
-  height: auto;
+  height: 100%;
   margin: 0 auto;
   box-shadow: 0 0 10px #ccc;
   background-color: white;
-  padding-top: 10rem;
-  padding-bottom: 10rem;
+  padding: 30px 30% 30px 30px;
+
+  form {
+    width: 100%;
+  }
 }

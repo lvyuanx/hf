@@ -1,8 +1,7 @@
 import copy
-import json
 
-from adminExt.models import SPremission
-from adminExt.serializers.admin_ext import SPremissionSerializer
+from manager.models import SPremission
+from manager.serializers.manager import SPremissionSerializer
 
 
 def generate_menus(label):

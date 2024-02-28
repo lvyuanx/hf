@@ -1,14 +1,11 @@
-import { UploadRawFile } from "element-plus";
-
-export interface StaffBase {
-  user: User;
+export interface StaffBase extends User {
   staff_code: string;
-  phone_number: string;
-  avatar: UploadRawFile | null;
-  notes: string;
+  phone_number?: string;
+  avatar: string | File;
+  notes?: string;
+  role_lst: string[];
 }
 
 export interface User {
-  username: string;
-  password: string;
+  fullname: string; // 真实姓名
 }

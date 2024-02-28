@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "web",
     "staff",
     "system",
+    "manager"
 ]
 
 MIDDLEWARE = [
@@ -225,3 +226,5 @@ USE_TZ = True
 TIME_ZONE = 'Asia/Shanghai'
 USE_I18N = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+default_pwd = '{staff_code}123456'

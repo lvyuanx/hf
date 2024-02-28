@@ -1,28 +1,27 @@
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
+from django.http import HttpResponseNotFound
 from django.utils.deprecation import MiddlewareMixin
 
-from adminExt.configs.label_config import ADMIN_MENU_LABEL, USER_ROLE_LABEL
-from adminExt.models import SPremission, SRole
-from adminExt.utils.permission_utils import generate_menus
+from adminExt.const import RoleLabelName, SRoleName, MenuCfg
+from manager.models import SRole
 
 
 class FilterMenu(MiddlewareMixin):
-    def process_request(self, request):  # noqa
+    def process_request(self, request):
         if "/admin/" in request.path:
-            menus = []
-            # 根据用户权限生成菜单
             if not isinstance(request.user, AnonymousUser):
-                user_id = request.user.id
-                # 1. 获取菜单根节点
-                role = SRole.objects.filter(users=user_id, is_enable=True, is_delete=False,
-                                            role_label=USER_ROLE_LABEL).order_by("id")
-                if role:
-                    curr_user_role = role[0]
-                    # 2. 获取菜单LABEL
-                    if curr_user_role.role_name == 'admin':
-                        label = ADMIN_MENU_LABEL
-                    else:
-                        label = '%s_%s' % (ADMIN_MENU_LABEL, curr_user_role.role_name)
-                    menus = generate_menus(label)
-            settings.SIMPLEUI_CONFIG['menus'] = menus if isinstance(menus, list) else menus.get('models')
+                user = request.user
+                # 获取用户角色
+                role_names = SRole.objects.filter(users=user, role_label=RoleLabelName.角色标识.value) \
+                    .values_list('role_name', flat=True)
+                admin_page_roles = [SRoleName.管理员.value, SRoleName.超级管理员.value]
+                if len([role_name for role_name in role_names if role_name in admin_page_roles]) < 0:
+                    # 重定向到404页面
+                    return HttpResponseNotFound()
+
+                if SRoleName.超级管理员.value in role_names:
+                    menu_dict = {}
+                    for item in MenuCfg:
+                        menu_dict[item.value.get('name')] = item.value
+                    settings.SIMPLEUI_CONFIG['menus'] = list(menu_dict.values())
