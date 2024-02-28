@@ -1,0 +1,78 @@
+.file-upload-image-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  .img-upload-box {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .image-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-right: 18px;
+
+    .image-default {
+      background-image: url("@/assets/img/state/image-default.png");
+      background-size: 60%;
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      object-fit: cover;
+    }
+
+    .image-size-md {
+      width: 130px;
+      height: 130px;
+    }
+
+    .image-size-sm {
+      width: 80px;
+      height: 80px;
+    }
+
+    .image-base {
+      position: relative;
+      background-color: var(--bg-color);
+      border-radius: var(--border-radius);
+      margin-right: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      &:hover {
+        .image-delete {
+          display: flex;
+        }
+      }
+
+      .image-delete {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba($color: #000000, $alpha: 0.6);
+
+        .el-icon {
+          font-size: calc(var(--font-size-xxl) * 2);
+          color: var(--font-color-light);
+
+          &:hover {
+            color: var(--color-danger);
+          }
+        }
+      }
+    }
+  }
+}
